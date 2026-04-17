@@ -1,75 +1,148 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { campaigns } from "@/data/campaigns";
+import { cn } from "@/lib/cn";
+
+const ROTATE_MS = 5400;
+
+type Slide = {
+  src: string;
+  alt: string;
+  title: string;
+  category: string;
+  slug: string;
+};
+
+const slides: Slide[] = campaigns.map((c) => {
+  // Prefer a feature frame if flagged; else frame 01.
+  const featured = c.images.find((i) => i.feature) ?? c.images[0];
+  return {
+    src: featured.src,
+    alt: `${c.modelName} — ${c.title}`,
+    title: c.title,
+    category: c.category,
+    slug: c.slug,
+  };
+});
 
 export function Hero() {
-  const heroImage = campaigns[1]?.images[0] ?? campaigns[0].images[0];
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused || slides.length <= 1) return;
+    const t = setInterval(() => setI((n) => (n + 1) % slides.length), ROTATE_MS);
+    return () => clearInterval(t);
+  }, [paused]);
+
+  const slide = slides[i];
 
   return (
-    <section className="relative">
-      <div className="container-edge pt-6 md:pt-10 pb-12 md:pb-20">
-        <div className="flex items-center gap-4 mb-8">
-          <span className="serial">ByFabian · Est. 2026</span>
-          <span className="h-px flex-1 bg-rule" aria-hidden />
-          <span className="serial">Issue 01 — Yamada</span>
+    <section
+      className="relative w-full"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="relative h-[88svh] min-h-[560px] max-h-[960px] w-full overflow-hidden bg-ink">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={slide.src}
+            initial={{ opacity: 0, scale: 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={slide.src}
+              alt={slide.alt}
+              fill
+              priority
+              sizes="100vw"
+              quality={92}
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25"
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Top-left micro-caption */}
+        <div className="absolute top-6 left-5 md:top-10 md:left-10 text-ground/90">
+          <p className="text-[0.7rem] uppercase tracking-wider2">
+            AI campaigns for modern brands
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-12 gap-y-10 md:gap-x-8 items-end">
-          <div className="md:col-span-7">
-            <motion.h1
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-display-xl"
-            >
-              Campaigns<span className="italic text-ink-soft">,</span>
-              <br />
-              without the <span className="italic">plane ticket</span>.
-            </motion.h1>
-          </div>
+        {/* Bottom: slide label + controls */}
+        <div className="absolute inset-x-0 bottom-0 text-ground">
+          <div className="container-edge pb-8 md:pb-12">
+            <div className="flex items-end justify-between gap-6">
+              <Link
+                href={`/work/${slide.slug}`}
+                className="group block"
+                aria-label={`Open campaign ${slide.title}`}
+              >
+                <p className="text-[0.7rem] uppercase tracking-wider2 text-ground/75 mb-2">
+                  {slide.category}
+                </p>
+                <h1 className="font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] tracking-tightest">
+                  {slide.title}
+                  <span
+                    aria-hidden
+                    className="inline-block ml-4 align-middle text-[0.55em] translate-y-[-0.12em] transition-transform duration-300 group-hover:translate-x-2"
+                  >
+                    ↗
+                  </span>
+                </h1>
+              </Link>
 
-          <div className="md:col-span-4 md:col-start-9">
-            <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[0.95rem] text-ink-soft leading-relaxed max-w-[34ch]"
-            >
-              ByFabian is a one-person studio building editorial AI imagery for
-              fashion, beauty, and lifestyle brands. Full campaigns, a single
-              director, zero logistics.
-            </motion.p>
+              <div className="hidden md:flex items-center gap-3 pb-2">
+                {slides.map((s, idx) => (
+                  <button
+                    key={s.slug}
+                    onClick={() => setI(idx)}
+                    aria-label={`Show ${s.title}`}
+                    className={cn(
+                      "h-px w-10 transition-all duration-300",
+                      idx === i
+                        ? "bg-ground h-[2px]"
+                        : "bg-ground/40 hover:bg-ground/70",
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.2 }}
-          className="relative mt-14 md:mt-20 aspect-[16/10] md:aspect-[16/9] overflow-hidden bg-rule/30"
-        >
-          <Image
-            src={heroImage.src}
-            alt="ByFabian cover"
-            fill
-            priority
-            sizes="100vw"
-            quality={92}
-            className="object-cover"
-          />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-t from-ground/60 via-transparent to-transparent"
-          />
-          <div className="absolute left-6 bottom-6 md:left-10 md:bottom-10 text-ground mix-blend-difference">
-            <p className="eyebrow !text-ground/90 mb-2">Now showing</p>
-            <p className="font-display text-2xl md:text-3xl tracking-tightest">
-              Yamada — three campaigns
-            </p>
-          </div>
-        </motion.div>
+      {/* Positioning line beneath the hero */}
+      <div className="container-edge py-10 md:py-14 grid md:grid-cols-12 gap-y-6 md:gap-x-8 items-start">
+        <p className="md:col-span-7 font-display text-[clamp(1.35rem,2.4vw,1.85rem)] leading-[1.25] tracking-tightest max-w-[34ch]">
+          ByFabian is a one-person studio making editorial campaign imagery —
+          fashion, beauty, activewear — without a set, a flight, or a crew.
+        </p>
+        <div className="md:col-span-4 md:col-start-9">
+          <Link
+            href="/contact"
+            className="group inline-flex items-center gap-2 text-[0.8125rem] uppercase tracking-wider2 text-ink hover:text-accent transition-colors"
+          >
+            <span>Book a campaign</span>
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </Link>
+        </div>
       </div>
     </section>
   );

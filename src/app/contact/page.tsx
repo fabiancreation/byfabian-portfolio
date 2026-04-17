@@ -10,7 +10,7 @@ export default function ContactPage() {
   const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_URL;
 
   return (
-    <section className="container-edge pt-14 md:pt-20 pb-24">
+    <section className="container-edge pt-[calc(64px+2.5rem)] md:pt-[calc(72px+3rem)] pb-24">
       <div className="flex items-center gap-3 mb-10">
         <span className="serial">Book</span>
         <span className="h-px w-8 bg-ink-mute/40" aria-hidden />

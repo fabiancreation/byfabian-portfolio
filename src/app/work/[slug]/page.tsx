@@ -42,7 +42,7 @@ export default async function CampaignPage({
   return (
     <article>
       {/* Title plate */}
-      <header className="container-edge pt-10 md:pt-14 pb-8 md:pb-14">
+      <header className="container-edge pt-[calc(64px+2rem)] md:pt-[calc(72px+2.5rem)] pb-8 md:pb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="serial">{campaign.number}</span>
           <span className="h-px w-8 bg-ink-mute/40" aria-hidden />

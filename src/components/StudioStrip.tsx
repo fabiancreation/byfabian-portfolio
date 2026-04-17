@@ -26,8 +26,8 @@ export function StudioStrip() {
       <div className="grid md:grid-cols-12 gap-y-10 md:gap-x-8">
         <div className="md:col-span-4">
           <p className="eyebrow mb-6">Studio</p>
-          <p className="font-display text-display-lg tracking-tightest max-w-[12ch]">
-            What ByFabian delivers.
+          <p className="font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] tracking-tightest max-w-[16ch]">
+            What a campaign with ByFabian looks like.
           </p>
         </div>
         <div className="md:col-span-8 grid sm:grid-cols-3 gap-8 md:gap-6">

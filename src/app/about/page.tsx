@@ -18,7 +18,7 @@ export default function AboutPage() {
   const hero = campaigns[0].images[0];
   return (
     <>
-      <section className="container-edge pt-14 md:pt-20 pb-16">
+      <section className="container-edge pt-[calc(64px+2.5rem)] md:pt-[calc(72px+3rem)] pb-16">
         <div className="flex items-center gap-3 mb-8">
           <span className="serial">About</span>
           <span className="h-px w-8 bg-ink-mute/40" aria-hidden />
