@@ -9,10 +9,8 @@ import { cn } from "@/lib/cn";
 
 const ROTATE_MS = 6500;
 
-// Campaigns that rotate in the hero, in order. Portrait-only campaigns
-// (e.g. Face) are intentionally excluded — they crop awkwardly in the
-// landscape hero and live instead in the Work grid below.
-const HERO_ORDER = ["yamada-bomber-jacket", "yamada-alo"];
+// Campaigns that rotate in the hero, in order.
+const HERO_ORDER = ["yamada-bomber-jacket", "yamada-alo", "yamada-face-expressions"];
 
 type Slide = {
   src: string;
@@ -72,14 +70,7 @@ export function Hero() {
               priority
               sizes="100vw"
               quality={92}
-              className={cn(
-                "object-cover",
-                // Portrait sources need their focus zone raised so the face
-                // isn't half out of the frame in a landscape crop.
-                slide.aspect === "portrait"
-                  ? "object-[center_20%]"
-                  : "object-center",
-              )}
+              className="object-cover object-center"
             />
             <div
               aria-hidden
