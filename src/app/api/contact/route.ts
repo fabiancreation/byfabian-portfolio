@@ -31,9 +31,21 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL || "fabian.arndt.info@gmail.com";
+  const isProd = process.env.NODE_ENV === "production";
 
   if (!apiKey) {
-    // Dev fallback: log to server, don't block the UX.
+    if (isProd) {
+      // No key in production — send the user to the mailto fallback rather than
+      // losing the brief in a function log.
+      return NextResponse.json(
+        {
+          error: "Email relay not configured yet.",
+          fallbackEmail: to,
+        },
+        { status: 503 },
+      );
+    }
+    // Dev: log and return ok so the form can be tested locally.
     console.log("[contact] (no RESEND_API_KEY set) brief:", v);
     return NextResponse.json({ ok: true, dev: true });
   }

@@ -39,24 +39,31 @@ export function ContactForm() {
     "idle"
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [fallbackEmail, setFallbackEmail] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: FormValues) => {
     setStatus("sending");
     setErrorMsg(null);
+    setFallbackEmail(null);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "Send failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (data?.fallbackEmail) setFallbackEmail(data.fallbackEmail);
+        throw new Error(data?.error ?? "Send failed");
+      }
       setStatus("sent");
       reset();
     } catch (e: unknown) {
@@ -64,6 +71,27 @@ export function ContactForm() {
       setErrorMsg(e instanceof Error ? e.message : "Send failed");
     }
   };
+
+  function mailtoHref(to: string) {
+    const values = (getValues?.() ?? {}) as Partial<FormValues>;
+    const subject = encodeURIComponent(
+      `New brief — ${values.brand ?? "(brand)"} · ${values.projectType ?? ""}`.trim(),
+    );
+    const body = encodeURIComponent(
+      [
+        `From: ${values.name ?? ""} <${values.email ?? ""}>`,
+        `Brand: ${values.brand ?? ""}`,
+        `Project: ${values.projectType ?? ""}`,
+        `Budget: ${values.budget ?? ""}`,
+        values.timeline ? `Timeline: ${values.timeline}` : "",
+        "",
+        values.message ?? "",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    );
+    return `mailto:${to}?subject=${subject}&body=${body}`;
+  }
 
   if (status === "sent") {
     return (
@@ -142,26 +170,38 @@ export function ContactForm() {
         />
       </Field>
 
-      <div className="flex items-center justify-between gap-4 pt-4">
-        <p className="serial">
-          {status === "error" && errorMsg ? `Error: ${errorMsg}` : ""}
-        </p>
-        <button
-          type="submit"
-          disabled={status === "sending"}
-          className={cn(
-            "group inline-flex items-center gap-3 px-7 py-4 bg-ink text-ground text-[0.8125rem] uppercase tracking-wider2",
-            "hover:bg-accent transition-colors duration-300 disabled:opacity-50"
-          )}
-        >
-          <span>{status === "sending" ? "Sending…" : "Send brief"}</span>
-          <span
-            aria-hidden
-            className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
+        <div className="serial flex-1 min-w-[12ch]">
+          {status === "error" && errorMsg ? (
+            <span>{errorMsg}</span>
+          ) : null}
+        </div>
+        <div className="flex items-center gap-4">
+          {status === "error" && fallbackEmail ? (
+            <a
+              href={mailtoHref(fallbackEmail)}
+              className="text-[0.8125rem] uppercase tracking-wider2 text-ink underline underline-offset-4 hover:text-accent transition-colors"
+            >
+              Email directly →
+            </a>
+          ) : null}
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            className={cn(
+              "group inline-flex items-center gap-3 px-7 py-4 bg-ink text-ground text-[0.8125rem] uppercase tracking-wider2",
+              "hover:bg-accent transition-colors duration-300 disabled:opacity-50"
+            )}
           >
-            →
-          </span>
-        </button>
+            <span>{status === "sending" ? "Sending…" : "Send brief"}</span>
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </button>
+        </div>
       </div>
 
       <style jsx>{`
