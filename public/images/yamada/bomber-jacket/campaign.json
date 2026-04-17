@@ -1,0 +1,11 @@
+{
+  "title": "Bomber",
+  "number": "02",
+  "category": "Streetwear Editorial",
+  "year": 2026,
+  "tagline": "Cold wall, warm stare.",
+  "description": "Platinum hair against a bleached-out wall. A bomber that's seen things. This was the mood-board test that became a campaign — proof that a single model can carry editorial weight without a crew, a location scout, or a plane ticket.",
+  "tools": ["Flux 1.1", "ComfyUI", "Magnific"],
+  "featureIds": ["01", "05"],
+  "order": 2
+}

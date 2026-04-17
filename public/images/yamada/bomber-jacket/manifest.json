@@ -1,0 +1,63 @@
+{
+  "model": "yamada",
+  "campaign": "bomber-jacket",
+  "source": "Bomber Jacket",
+  "images": [
+    {
+      "id": "01",
+      "base": "01",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape"
+    },
+    {
+      "id": "02",
+      "base": "02",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape"
+    },
+    {
+      "id": "03",
+      "base": "03",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape"
+    },
+    {
+      "id": "04",
+      "base": "04",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape"
+    },
+    {
+      "id": "05",
+      "base": "05",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "06",
+      "base": "06",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "07",
+      "base": "07",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "08",
+      "base": "08",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    }
+  ]
+}

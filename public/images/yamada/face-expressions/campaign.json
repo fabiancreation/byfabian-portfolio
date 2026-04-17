@@ -1,0 +1,11 @@
+{
+  "title": "Face",
+  "number": "01",
+  "category": "Beauty Editorial",
+  "year": 2026,
+  "tagline": "Ten frames. One unguarded hour.",
+  "description": "A study in close quiet. No wardrobe, no set — just natural window light, bare skin, and the small shifts of a face that has nothing to prove. The series reads like a casting tape for someone who already has the part.",
+  "tools": ["Flux 1.1", "ComfyUI", "Lightroom"],
+  "featureIds": ["01", "06"],
+  "order": 1
+}

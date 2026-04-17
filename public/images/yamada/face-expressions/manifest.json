@@ -1,0 +1,77 @@
+{
+  "model": "yamada",
+  "campaign": "face-expressions",
+  "source": "Face expressions",
+  "images": [
+    {
+      "id": "01",
+      "base": "01",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "02",
+      "base": "02",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "03",
+      "base": "03",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "04",
+      "base": "04",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "05",
+      "base": "05",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "06",
+      "base": "06",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "07",
+      "base": "07",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "08",
+      "base": "08",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "09",
+      "base": "09",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    },
+    {
+      "id": "10",
+      "base": "10",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait"
+    }
+  ]
+}

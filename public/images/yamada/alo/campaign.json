@@ -1,0 +1,11 @@
+{
+  "title": "ALO",
+  "number": "03",
+  "category": "Activewear Campaign",
+  "year": 2026,
+  "tagline": "Los Angeles, twenty minutes before blue hour.",
+  "description": "An activewear campaign concept shot on a rooftop that doesn't exist, with a model that doesn't exist, at a golden hour that was every golden hour. Built to show how ByFabian can deliver a full brand campaign — on-location energy without the location budget.",
+  "tools": ["Flux 1.1", "ComfyUI", "Topaz"],
+  "featureIds": ["01", "07"],
+  "order": 3
+}
