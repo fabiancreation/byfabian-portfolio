@@ -9,9 +9,10 @@ import { cn } from "@/lib/cn";
 
 const ROTATE_MS = 6500;
 
-// Preferred hero order. Landscape-friendly campaigns lead; portrait-only
-// sets come last because they crop aggressively in a 16:9 frame.
-const HERO_ORDER = ["yamada-bomber-jacket", "yamada-alo", "yamada-face-expressions"];
+// Campaigns that rotate in the hero, in order. Portrait-only campaigns
+// (e.g. Face) are intentionally excluded — they crop awkwardly in the
+// landscape hero and live instead in the Work grid below.
+const HERO_ORDER = ["yamada-bomber-jacket", "yamada-alo"];
 
 type Slide = {
   src: string;
@@ -22,23 +23,19 @@ type Slide = {
   aspect: "portrait" | "landscape" | "square";
 };
 
-const ordered = [...campaigns].sort((a, b) => {
-  const ai = HERO_ORDER.indexOf(a.slug);
-  const bi = HERO_ORDER.indexOf(b.slug);
-  return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-});
-
-const slides: Slide[] = ordered.map((c) => {
-  const pick = c.heroImage ?? c.images.find((i) => i.feature) ?? c.images[0];
-  return {
-    src: pick.src,
-    alt: `${c.modelName} — ${c.title}`,
-    title: c.title,
-    category: c.category,
-    slug: c.slug,
-    aspect: pick.aspect,
-  };
-});
+const slides: Slide[] = HERO_ORDER.map((slug) => campaigns.find((c) => c.slug === slug))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c))
+  .map((c) => {
+    const pick = c.heroImage ?? c.images.find((i) => i.feature) ?? c.images[0];
+    return {
+      src: pick.src,
+      alt: `${c.modelName} — ${c.title}`,
+      title: c.title,
+      category: c.category,
+      slug: c.slug,
+      aspect: pick.aspect,
+    };
+  });
 
 export function Hero() {
   const [i, setI] = useState(0);
