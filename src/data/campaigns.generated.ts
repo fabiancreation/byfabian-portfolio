@@ -30,6 +30,17 @@ export const campaigns: Campaign[] = [
   ],
   "cover": "/images/yamada/face-expressions/01.jpg",
   "coverAspect": "portrait",
+  "heroFrame": "03",
+  "heroImage": {
+    "id": "03",
+    "src": "/images/yamada/face-expressions/03.jpg",
+    "alt": "Yamada — Face — frame 03",
+    "width": 1792,
+    "height": 2400,
+    "aspect": "portrait",
+    "feature": true
+  },
+  "draft": false,
   "images": [
     {
       "id": "01",
@@ -38,7 +49,7 @@ export const campaigns: Campaign[] = [
       "width": 1792,
       "height": 2400,
       "aspect": "portrait",
-      "feature": true
+      "feature": false
     },
     {
       "id": "02",
@@ -56,7 +67,7 @@ export const campaigns: Campaign[] = [
       "width": 1792,
       "height": 2400,
       "aspect": "portrait",
-      "feature": false
+      "feature": true
     },
     {
       "id": "04",
@@ -140,6 +151,17 @@ export const campaigns: Campaign[] = [
   ],
   "cover": "/images/yamada/bomber-jacket/01.jpg",
   "coverAspect": "landscape",
+  "heroFrame": "01",
+  "heroImage": {
+    "id": "01",
+    "src": "/images/yamada/bomber-jacket/01.jpg",
+    "alt": "Yamada — Bomber — frame 01",
+    "width": 2400,
+    "height": 1792,
+    "aspect": "landscape",
+    "feature": true
+  },
+  "draft": false,
   "images": [
     {
       "id": "01",
@@ -232,6 +254,17 @@ export const campaigns: Campaign[] = [
   ],
   "cover": "/images/yamada/alo/01.jpg",
   "coverAspect": "landscape",
+  "heroFrame": "07",
+  "heroImage": {
+    "id": "07",
+    "src": "/images/yamada/alo/07.jpg",
+    "alt": "Yamada — ALO — frame 07",
+    "width": 2400,
+    "height": 1792,
+    "aspect": "landscape",
+    "feature": true
+  },
+  "draft": false,
   "images": [
     {
       "id": "01",
@@ -321,6 +354,89 @@ export const campaigns: Campaign[] = [
       "width": 2400,
       "height": 1792,
       "aspect": "landscape",
+      "feature": false
+    }
+  ]
+},
+{
+  "slug": "yamada-mix",
+  "title": "Mix",
+  "number": "04",
+  "modelSlug": "yamada",
+  "modelName": "Yamada",
+  "category": "Editorial",
+  "year": 2026,
+  "tagline": "A new campaign. Fresh frames.",
+  "description": "A campaign description — swap this text with the brief, the feel, the reason the work exists.",
+  "tools": [
+    "Flux 1.1",
+    "ComfyUI"
+  ],
+  "cover": "/images/yamada/mix/01.jpg",
+  "coverAspect": "landscape",
+  "heroImage": {
+    "id": "01",
+    "src": "/images/yamada/mix/01.jpg",
+    "alt": "Yamada — Mix — frame 01",
+    "width": 2400,
+    "height": 1792,
+    "aspect": "landscape",
+    "feature": false
+  },
+  "draft": true,
+  "images": [
+    {
+      "id": "01",
+      "src": "/images/yamada/mix/01.jpg",
+      "alt": "Yamada — Mix — frame 01",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape",
+      "feature": false
+    },
+    {
+      "id": "02",
+      "src": "/images/yamada/mix/02.jpg",
+      "alt": "Yamada — Mix — frame 02",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape",
+      "feature": false
+    },
+    {
+      "id": "03",
+      "src": "/images/yamada/mix/03.jpg",
+      "alt": "Yamada — Mix — frame 03",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait",
+      "feature": false
+    },
+    {
+      "id": "04",
+      "src": "/images/yamada/mix/04.jpg",
+      "alt": "Yamada — Mix — frame 04",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait",
+      "feature": false
+    },
+    {
+      "id": "05",
+      "src": "/images/yamada/mix/05.jpg",
+      "alt": "Yamada — Mix — frame 05",
+      "width": 2400,
+      "height": 1792,
+      "aspect": "landscape",
+      "feature": false
+    },
+    {
+      "id": "06",
+      "src": "/images/yamada/mix/06.jpg",
+      "alt": "Yamada — Mix — frame 06",
+      "width": 1792,
+      "height": 2400,
+      "aspect": "portrait",
       "feature": false
     }
   ]

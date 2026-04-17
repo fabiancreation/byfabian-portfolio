@@ -107,7 +107,15 @@ type CampaignMeta = {
   description: string;
   tools: string[];
   featureIds?: string[];
+  heroFrame?: string;
   order?: number;
+  /**
+   * Hidden from the site when true. Auto-set on freshly stubbed
+   * campaigns so that dropping a raw folder into Images/ never
+   * silently exposes placeholder copy. Flip to false once the real
+   * metadata is written.
+   */
+  draft?: boolean;
 };
 
 type ModelMeta = {
@@ -209,6 +217,7 @@ function stubCampaignMeta(sourceName: string, order: number): CampaignMeta {
     tools: ["Flux 1.1", "ComfyUI"],
     featureIds: [],
     order,
+    draft: true,
   };
 }
 
@@ -241,6 +250,11 @@ function generateDataFile(
         feature: (c.meta.featureIds ?? []).includes(img.id),
       }));
       const coverImage = images[0];
+      const heroId = c.meta.heroFrame;
+      const heroImage =
+        (heroId && images.find((i) => i.id === heroId)) ||
+        images.find((i) => i.feature) ||
+        images[0];
       const obj = {
         slug: c.slug,
         title: c.meta.title,
@@ -254,6 +268,9 @@ function generateDataFile(
         tools: c.meta.tools,
         cover: coverImage.src,
         coverAspect: coverImage.aspect,
+        heroFrame: heroId,
+        heroImage,
+        draft: c.meta.draft === true,
         images,
       };
       return stringify(obj, 2);

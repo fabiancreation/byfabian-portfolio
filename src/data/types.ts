@@ -29,5 +29,8 @@ export type Campaign = {
   tools: string[];
   cover: string;
   coverAspect: Aspect;
+  heroFrame?: string;
+  heroImage?: CampaignImage;
+  draft?: boolean;
   images: CampaignImage[];
 };

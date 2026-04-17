@@ -1,7 +1,11 @@
 // Public data layer. All state comes from the generated file which is rebuilt
 // by `npm run sync` whenever campaign folders, images, or metadata change.
-import { campaigns, models } from "./campaigns.generated";
+import { campaigns as all, models } from "./campaigns.generated";
 import type { Campaign } from "./types";
+
+// Draft campaigns (auto-stubbed when a new folder appears but real metadata
+// hasn't been filled in yet) never reach the site.
+const campaigns: Campaign[] = all.filter((c) => !c.draft);
 
 export { campaigns, models };
 export type { Aspect, Campaign, CampaignImage, Model } from "./types";

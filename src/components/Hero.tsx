@@ -7,7 +7,11 @@ import { useEffect, useState } from "react";
 import { campaigns } from "@/data/campaigns";
 import { cn } from "@/lib/cn";
 
-const ROTATE_MS = 5400;
+const ROTATE_MS = 6500;
+
+// Preferred hero order. Landscape-friendly campaigns lead; portrait-only
+// sets come last because they crop aggressively in a 16:9 frame.
+const HERO_ORDER = ["yamada-bomber-jacket", "yamada-alo", "yamada-face-expressions"];
 
 type Slide = {
   src: string;
@@ -15,17 +19,24 @@ type Slide = {
   title: string;
   category: string;
   slug: string;
+  aspect: "portrait" | "landscape" | "square";
 };
 
-const slides: Slide[] = campaigns.map((c) => {
-  // Prefer a feature frame if flagged; else frame 01.
-  const featured = c.images.find((i) => i.feature) ?? c.images[0];
+const ordered = [...campaigns].sort((a, b) => {
+  const ai = HERO_ORDER.indexOf(a.slug);
+  const bi = HERO_ORDER.indexOf(b.slug);
+  return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+});
+
+const slides: Slide[] = ordered.map((c) => {
+  const pick = c.heroImage ?? c.images.find((i) => i.feature) ?? c.images[0];
   return {
-    src: featured.src,
+    src: pick.src,
     alt: `${c.modelName} — ${c.title}`,
     title: c.title,
     category: c.category,
     slug: c.slug,
+    aspect: pick.aspect,
   };
 });
 
@@ -64,7 +75,14 @@ export function Hero() {
               priority
               sizes="100vw"
               quality={92}
-              className="object-cover"
+              className={cn(
+                "object-cover",
+                // Portrait sources need their focus zone raised so the face
+                // isn't half out of the frame in a landscape crop.
+                slide.aspect === "portrait"
+                  ? "object-[center_20%]"
+                  : "object-center",
+              )}
             />
             <div
               aria-hidden
@@ -72,13 +90,6 @@ export function Hero() {
             />
           </motion.div>
         </AnimatePresence>
-
-        {/* Top-left micro-caption */}
-        <div className="absolute top-6 left-5 md:top-10 md:left-10 text-ground/90">
-          <p className="text-[0.7rem] uppercase tracking-wider2">
-            AI campaigns for modern brands
-          </p>
-        </div>
 
         {/* Bottom: slide label + controls */}
         <div className="absolute inset-x-0 bottom-0 text-ground">
