@@ -39,6 +39,7 @@ export default function AboutPage() {
                 alt="ByFabian — portrait frame"
                 fill
                 sizes="(min-width:768px) 33vw, 100vw"
+                quality={92}
                 className="object-cover"
               />
             </div>

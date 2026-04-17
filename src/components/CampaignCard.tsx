@@ -53,6 +53,7 @@ export function CampaignCard({ campaign, index, align = "left" }: Props) {
                 fill
                 sizes="(min-width: 768px) 66vw, 100vw"
                 priority={index < 2}
+                quality={92}
                 className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
               />
             </div>

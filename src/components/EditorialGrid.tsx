@@ -57,6 +57,7 @@ function Frame({
         fill
         sizes={sizes}
         priority={priority}
+        quality={92}
         className="object-cover"
       />
     </motion.div>

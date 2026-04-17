@@ -33,7 +33,14 @@ const SIZES = [
   { w: 800, suffix: "sm" },
   { w: 1400, suffix: "md" },
   { w: 2000, suffix: "lg" },
+  { w: 2400, suffix: "xl" },
 ];
+
+// Quality dialed up — portraits/skin need it. AVIF is where aggressive quality
+// choices show up fastest in visible softness, so keep it well above 70.
+const AVIF_QUALITY = 78;
+const WEBP_QUALITY = 88;
+const JPG_QUALITY = 92;
 
 // -- helpers --------------------------------------------------------
 
@@ -155,30 +162,23 @@ async function optimiseCampaign(
 
     const biggestJpg = [...SIZES].reverse().find((s) => width >= s.w) || SIZES[SIZES.length - 1];
 
+    // Always regenerate to pick up new quality settings. Overwrite is cheap
+    // (sharp decodes once per size) and makes behaviour deterministic.
     for (const { w, suffix } of SIZES) {
       if (width < w) continue;
-      const outAvif = join(outDir, `${base}-${suffix}.avif`);
-      const outWebp = join(outDir, `${base}-${suffix}.webp`);
-      if (!existsSync(outAvif)) {
-        await sharp(srcPath)
-          .resize({ width: w, withoutEnlargement: true })
-          .toFormat("avif", { quality: 62, effort: 4 })
-          .toFile(outAvif);
-      }
-      if (!existsSync(outWebp)) {
-        await sharp(srcPath)
-          .resize({ width: w, withoutEnlargement: true })
-          .toFormat("webp", { quality: 78 })
-          .toFile(outWebp);
-      }
-    }
-    const outJpg = join(outDir, `${base}.jpg`);
-    if (!existsSync(outJpg)) {
       await sharp(srcPath)
-        .resize({ width: biggestJpg.w, withoutEnlargement: true })
-        .toFormat("jpeg", { quality: 82, mozjpeg: true })
-        .toFile(outJpg);
+        .resize({ width: w, withoutEnlargement: true })
+        .toFormat("avif", { quality: AVIF_QUALITY, effort: 6 })
+        .toFile(join(outDir, `${base}-${suffix}.avif`));
+      await sharp(srcPath)
+        .resize({ width: w, withoutEnlargement: true })
+        .toFormat("webp", { quality: WEBP_QUALITY, effort: 6 })
+        .toFile(join(outDir, `${base}-${suffix}.webp`));
     }
+    await sharp(srcPath)
+      .resize({ width: biggestJpg.w, withoutEnlargement: true })
+      .toFormat("jpeg", { quality: JPG_QUALITY, mozjpeg: true, chromaSubsampling: "4:4:4" })
+      .toFile(join(outDir, `${base}.jpg`));
 
     entries.push({ id, base, width, height, aspect });
     process.stdout.write(".");

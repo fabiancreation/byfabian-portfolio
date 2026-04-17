@@ -115,6 +115,7 @@ export default async function CampaignPage({
                     alt={next.title}
                     fill
                     sizes="160px"
+                    quality={90}
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                   />
                 </div>
