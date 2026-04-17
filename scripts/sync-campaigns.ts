@@ -2,15 +2,22 @@
  * Sync pipeline — run after adding, renaming, or replacing image folders.
  * One command: `npm run sync`
  *
- * Walks `Images/<Model>/<Campaign>/*.{png,jpg,jpeg}` and for each:
- *   1. Optimises every image to public/images/<model>/<campaign>/ (AVIF, WebP, JPG at 3 widths).
- *   2. Writes/updates a manifest.json listing frames, widths, aspects.
- *   3. Preserves campaign.json metadata (title/category/tagline/…) if present, else creates a stub.
- *   4. Writes a model.json stub at public/images/<model>/ if none exists.
- *   5. Generates src/data/campaigns.generated.ts — the single source of truth the app reads.
+ * Two modes:
  *
- * Folder name → slug (e.g. "Bomber Jacket" → "bomber-jacket"). Frame order comes from
- * filenames in natural-numeric order.
+ * 1. FULL (local dev) — when `Images/` exists:
+ *    Walk `Images/<Model>/<Campaign>/*.{png,jpg,jpeg}`, optimise every image into
+ *    `public/images/<model>/<campaign>/` (AVIF/WebP/JPG × 3 widths), write
+ *    manifest.json, preserve/stub campaign.json + model.json.
+ *
+ * 2. REGENERATE-ONLY (CI / Vercel) — when `Images/` is absent:
+ *    Skip optimisation; read the already-committed `public/images/<model>/<campaign>/`
+ *    manifests and metadata, and regenerate the TS data file from those.
+ *
+ * In both modes, the final step writes `src/data/campaigns.generated.ts` — the
+ * single source of truth the app reads.
+ *
+ * Folder name → slug (e.g. "Bomber Jacket" → "bomber-jacket"). Frame order comes
+ * from filenames in natural-numeric order.
  */
 import sharp from "sharp";
 import { readdir, mkdir, writeFile, stat, readFile } from "node:fs/promises";
@@ -282,16 +289,20 @@ export type { Aspect, Campaign, Model };
 
 // -- main ------------------------------------------------------------
 
-async function main() {
+async function dirExists(p: string): Promise<boolean> {
   try {
-    await stat(SRC_ROOT);
+    const s = await stat(p);
+    return s.isDirectory();
   } catch {
-    console.error(`Source folder not found: ${SRC_ROOT}`);
-    console.error(`Create it and add campaign folders under it, then re-run.`);
-    process.exit(1);
+    return false;
   }
-  await ensureDir(OUT_ROOT);
+}
 
+async function collectFromSource(): Promise<{
+  models: { slug: string; meta: ModelMeta }[];
+  campaigns: GeneratedCampaign[];
+}> {
+  await ensureDir(OUT_ROOT);
   const models: { slug: string; meta: ModelMeta }[] = [];
   const campaigns: GeneratedCampaign[] = [];
 
@@ -305,7 +316,6 @@ async function main() {
     const modelOut = join(OUT_ROOT, modelSlug);
     await ensureDir(modelOut);
 
-    // Model metadata
     const modelMetaPath = join(modelOut, "model.json");
     let modelMeta = await readJson<ModelMeta>(modelMetaPath);
     if (!modelMeta) {
@@ -321,8 +331,7 @@ async function main() {
       (d) => d.isDirectory() && !d.name.startsWith("."),
     );
 
-    for (let i = 0; i < campaignDirs.length; i++) {
-      const cdir = campaignDirs[i];
+    for (const cdir of campaignDirs) {
       const folderSlug = slugify(cdir.name);
       const campaignSlug = `${modelSlug}-${folderSlug}`;
       const srcDir = join(modelPath, cdir.name);
@@ -336,7 +345,6 @@ async function main() {
         cdir.name,
       );
 
-      // Campaign metadata
       const metaPath = join(outDir, "campaign.json");
       let meta = await readJson<CampaignMeta>(metaPath);
       if (!meta) {
@@ -356,16 +364,77 @@ async function main() {
       });
     }
   }
+  return { models, campaigns };
+}
 
-  // Sort by explicit order, else by first-seen
+async function collectFromPublic(): Promise<{
+  models: { slug: string; meta: ModelMeta }[];
+  campaigns: GeneratedCampaign[];
+}> {
+  const models: { slug: string; meta: ModelMeta }[] = [];
+  const campaigns: GeneratedCampaign[] = [];
+
+  if (!(await dirExists(OUT_ROOT))) {
+    return { models, campaigns };
+  }
+
+  const modelDirs = (await readdir(OUT_ROOT, { withFileTypes: true })).filter(
+    (d) => d.isDirectory() && !d.name.startsWith("."),
+  );
+
+  for (const mdir of modelDirs) {
+    const modelSlug = mdir.name;
+    const modelOut = join(OUT_ROOT, modelSlug);
+    const modelMeta = (await readJson<ModelMeta>(join(modelOut, "model.json"))) ?? {
+      name: titleCase(modelSlug),
+    };
+    models.push({ slug: modelSlug, meta: modelMeta });
+
+    const campaignDirs = (await readdir(modelOut, { withFileTypes: true })).filter(
+      (d) => d.isDirectory() && !d.name.startsWith("."),
+    );
+    for (const cdir of campaignDirs) {
+      const outDir = join(modelOut, cdir.name);
+      const manifest = await readJson<Manifest>(join(outDir, "manifest.json"));
+      if (!manifest) continue;
+      const meta = (await readJson<CampaignMeta>(join(outDir, "campaign.json"))) ??
+        stubCampaignMeta(manifest.source || cdir.name, campaigns.length);
+      campaigns.push({
+        ...manifest,
+        slug: `${modelSlug}-${cdir.name}`,
+        modelSlug,
+        modelName: modelMeta.name,
+        meta,
+      });
+    }
+  }
+  return { models, campaigns };
+}
+
+async function main() {
+  const sourceAvailable = await dirExists(SRC_ROOT);
+
+  let result: {
+    models: { slug: string; meta: ModelMeta }[];
+    campaigns: GeneratedCampaign[];
+  };
+
+  if (sourceAvailable) {
+    console.log("Sync — full mode (optimising from Images/)");
+    result = await collectFromSource();
+  } else {
+    console.log("Sync — regenerate-only mode (Images/ not present, reading public/images/)");
+    result = await collectFromPublic();
+  }
+
+  const { models, campaigns } = result;
+
   campaigns.sort((a, b) => {
     const ao = a.meta.order ?? 999;
     const bo = b.meta.order ?? 999;
     if (ao !== bo) return ao - bo;
     return a.slug.localeCompare(b.slug);
   });
-
-  // Re-number based on final order
   campaigns.forEach((c, i) => {
     c.meta.number = String(i + 1).padStart(2, "0");
   });
